@@ -1,0 +1,2 @@
+TD_ACCOUNT = 'ACCOUNT NUMBER HERE'
+account_value = 100000.000
