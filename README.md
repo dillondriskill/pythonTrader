@@ -1,4 +1,4 @@
-# pythonTrader
+# Python Trader
 An automated python based stock trading bot
 
 Designed to be lightweight and relatively portable so as to be ran on a raspery pi zero w
