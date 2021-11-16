@@ -1,51 +1,49 @@
-import robot
-import indicator
-import pprint
 import trades
 import time
-import account
+from datetime import datetime
 
-crossover = 'None'
-rel = 'None'
-prev_rel = 'None'
+now = datetime.now()
 
-portfolio = ()
+hour = int(now.strftime("%H"))
+minute = int(now.strftime("%M"))
+second = int(now.strftime("%S"))
 
+# PUT SYMBOLS YOU WANT TO TRADE BELOW
 spy = trades.Instrument('SPY')
+# LMT = trades.Instrument('LMT')
+# QQQ = trade.Instrument('QQQ')
+# TSLA = trade.Instrument('TSLA')
+# GenericStock = trade.Instrument('INSERTSYMBOLHERE')
+# The API does have the ability to trade options, futures, etc, but I cannot be bothered to try and implement that
 
+# Time in seconds between updates
+interval = 10
 
-while True:
-    # getting macd, finding crossover, and purchasing/selling to make money
-    macd = indicator.get_macd('SPY')
-    round_mac = round(macd['MACD'], 2)
-    round_sig = round(macd['Signal line'], 2)
-    if round_mac[len(round_mac)-1] > round_sig[len(round_sig)-1]:
-        rel = 'Above'
-    elif round_mac[len(round_mac)-1] < round_sig[len(round_sig)-1]:
-        rel = 'Below'
-    elif round_mac[len(round_mac)-1] == round_sig[len(round_sig)-1]:
-        rel = prev_rel
+try:
+    while True:
+        for item in trades.portfolio:  # run everything for all the trades
+            # Only operate during market hours
+            if hour == 9:
+                if minute < 30:
+                    continue
+            elif 9 > hour > 16:
+                continue
+            else:
+                item.use_macd()  # using macd because RSI isn't super accurate for what im trying to do - pseudo HFT
 
-    spy.update()  # Updating the trade
+                # update all the trades and P/L and the spreadsheets.
+                item.update()
 
-    # checking whether to sell or buy
-    if not rel == prev_rel:
-        if rel == 'Above':
-            crossover = 'Uptrend'
-            spy.close()
-            spy.open(100.000)
-        elif rel == 'Below':
-            crossover = 'Downtrend'
-            spy.close()
-            spy.open(-100.000)
+                # Show us the money!
+                print(str(item.symbol))
+                print("Trade price: $" + str(item.trade_price))
+                print("Current Price: $" + str(item.current_price))
+                print("Realized Profits: $" + str(item.realized_profit))
+                print("Per Trade Profits: $" + str(item.unrealized_profit))
+                print("Amount: " + str(item.amount))
+                print('\n')
 
-    # debugging
-    print("Trade price: $" + str(spy.trade_price))
-    print("Current Price: $" + str(spy.current_price))
-    print("Realized Profits: $" + str(spy.realized_profit))
-    print("Per Trade Profits: $" + str(spy.per_trade_profit))
-    print("Amount: " + str(spy.amount))
-
-    prev_rel = rel  # updating prev rel for macd
-
-    time.sleep(10)
+        time.sleep(interval)  # updated every interval seconds
+except KeyboardInterrupt:
+    for item in trades.portfolio:
+        item.file.close()

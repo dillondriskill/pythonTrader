@@ -1,5 +1,4 @@
-# The only reason this is its own file is to stop circular imports.
-
+# This is just getting the access to the API. Technically, this file IS the app according to TD Ameritrade... Neato.
 from config import CONSUMER_KEY, REDIRECT_URI, JSON_PATH
 from td.client import TDClient
 
@@ -10,4 +9,3 @@ td_client = TDClient(
 )
 td_client.login()
 print("Logged in")
-
