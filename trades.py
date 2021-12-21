@@ -6,6 +6,12 @@ from datetime import datetime
 import xlsxwriter
 
 now = datetime.now()
+
+hour = int(now.strftime("%H"))
+minute = int(now.strftime("%M"))
+second = int(now.strftime("%S"))
+clocktime = (str(hour) + ':' + str(minute) + ':' + str(second))
+
 portfolio = []
 
 
@@ -21,10 +27,6 @@ class Instrument:
         self.trade_price = 0.0
         self.amount = 0
         portfolio.append(self)
-        self.textName = (str(self.symbol) + '.xlsx')
-        self.file = xlsxwriter.Workbook(self.textName)
-        self.spreadsheet = self.file.add_worksheet()
-        self.row = 2
 
         # 'local' variables - mainly for macd LOL
         self.rel = None
@@ -33,7 +35,18 @@ class Instrument:
         self.round_mac = None
         self.round_sig = None
 
+        self.thisNow = datetime.now()
+
+        self.thisHour = int(now.strftime("%H"))
+        self.thisMinute = int(now.strftime("%M"))
+        self.thisSecond = int(now.strftime("%S"))
+        self.thisClockTime = (str(hour) + ':' + str(minute) + ':' + str(second))
+
         # initializing the spreadsheet
+        self.textName = (str(self.symbol) + str(self.thisClockTime) + '.xlsx')
+        self.file = xlsxwriter.Workbook(self.textName)
+        self.spreadsheet = self.file.add_worksheet()
+        self.row = 2
         self.spreadsheet.write('A1', 'Time')
         self.spreadsheet.write('B1', 'Unrealized Profit')
         self.spreadsheet.write('C1', 'Realized Profit')
@@ -45,7 +58,15 @@ class Instrument:
             self.unrealized_profit = (self.current_price * self.amount) - (self.trade_price * self.amount)
         elif self.amount < 0.0:
             self.unrealized_profit = (self.trade_price * abs(self.amount)) - (self.current_price*abs(self.amount))
-        self.spreadsheet.write(('A' + str(self.row)), now)
+
+        self.thisNow = datetime.now()
+
+        self.thisHour = int(now.strftime("%H"))
+        self.thisMinute = int(now.strftime("%M"))
+        self.thisSecond = int(now.strftime("%S"))
+        self.thisClockTime = (str(hour) + ':' + str(minute) + ':' + str(second))
+
+        self.spreadsheet.write(('A' + str(self.row)), self.thisClockTime)
         self.spreadsheet.write(('B' + str(self.row)), self.unrealized_profit)
         self.spreadsheet.write(('C' + str(self.row)), self.realized_profit)
         self.row += 1
@@ -60,7 +81,6 @@ class Instrument:
         self.unrealized_profit = 0.0
         self.amount = 0
         self.trade_price = 0
-
 
     def use_macd(self):
         # Getting the MACD and signal line
