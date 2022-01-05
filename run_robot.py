@@ -16,7 +16,7 @@ interval = 10
 errors = 0
 
 
-def main():
+def main_fcn():
     now = datetime.now()  # getting the time in seconds since epoch
 
     hour = int(now.strftime("%H"))
@@ -47,19 +47,22 @@ def main():
             print("Amount: " + str(item.amount))
             print('\n')
 
-
-while True:  # Basically going to run
-    try:
-        main()
-    except Exception as e:  # Crashes a lot.
-        errors += 1
-        if errors == 3:
-            for i in trades.portfolio:
-                i.file.close()
+def mainloop():
+    while True:  # Basically going to run
+        try:
+            main_fcn()
+        except Exception as e:  # Crashes a lot.
+            errors += 1
+            if errors == 3:
+                for i in trades.portfolio:
+                    i.file.close()
+                    print(e)
+                    print('Closed')
+                    exit(1)
+            else:
                 print(e)
-                print('Closed')
-                exit(1)
-        else:
-            print(e)
 
-    time.sleep(interval)
+        time.sleep(interval)
+ 
+if __name__ == "__main__":
+    mainloop()
