@@ -1,8 +1,7 @@
-/config.py
-
-./account.py
+account.py
 
 *.json
 
 *.pyc
+
 config.py

@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import trades
 import time
 from datetime import datetime
